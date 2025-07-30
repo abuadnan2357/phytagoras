@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>استكشف نظرية فيتاغورس</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #007bff; /* لون العنوان أزرق */
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .canvas-wrapper {
+      position: relative;
+      display: inline-block;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    canvas {
+      border: 2px solid #3498db;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      display: block;
+      border-radius: 8px;
+      cursor: default;
+    }
+    .help-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      background: #f1c40f;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 10;
+      font-size: 18px;
+      color: #2c3e50;
+      transition: all 0.3s;
+    }
+    .help-icon:hover {
+      background: #f39c12;
+      transform: scale(1.1);
+    }
+    .popup-menu {
+      position: absolute;
+      top: 45px;
+      right: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 20;
+      min-width: 250px;
+      text-align: right;
+      font-family: 'Tajawal', sans-serif;
+      display: none;
+    }
+    .popup-menu.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .popup-title {
+      font-weight: bold;
+      color: #28a745; /* لون عنوان القائمة المنبثقة أخضر */
+      font-size: 16px;
+    }
+    .close-btn {
+      background: transparent;
+      color: #e74c3c;
+      border: none;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      font-weight: bold;
+      padding: 0;
+      margin: 0;
+    }
+    .close-btn:hover {
+      transform: scale(1.2);
+    }
+    .popup-content {
+      font-size: 14px;
+      color: #28a745; /* لون محتوى القائمة المنبثقة أخضر */
+      line-height: 1.6;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+    .icon {
+      font-size: 18px;
+    }
+    #latex-equations {
+      background: #ecf0f1;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+      color: #28a745; /* لون النصوص داخل مربع المعادلات أخضر */
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 1.2em;
+    }
+    .rtl-center-text {
+      text-align: center;
+      direction: rtl;
+    }
+    .ltr-text {
+      text-align: left;
+      direction: ltr;
+    }
+    .divider {
+      border-top: 1px solid #ccc;
+      margin: 10px 0;
+    }
+  </style>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span style="font-size: 1.2em; margin-left: 5px;">🔺</span> استكشف نظرية فيتاغورس
+    </h1>
+    <div class="canvas-wrapper">
+      <canvas id="triangleCanvas" width="500" height="500"></canvas>
+      <div class="help-icon" id="helpIcon">💡</div>
+      <div class="popup-menu" id="popupMenu">
+        <div class="popup-header">
+          <button class="close-btn" id="closeBtn">×</button>
+          <div class="popup-title">تعليمات 💡</div>
+        </div>
+        <div class="popup-content">
+          • اسحب المثلث بالكامل لتحريكه<br>
+          • اسحب الأعداد لتغيير موقعها بشكل مناسب<br>
+          • استخدم عجلة الماوس للتكبير والتصغير
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button onclick="generateNewTriangle()">
+        <span class="icon">🎲</span> مثلث جديد
+      </button>
+    </div>
+    <div id="latex-equations">
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('triangleCanvas');
+    const ctx = canvas.getContext('2d');
+    const helpIcon = document.getElementById('helpIcon');
+    const popupMenu = document.getElementById('popupMenu');
+    const closeBtn = document.getElementById('closeBtn');
+    const latexEquationsDiv = document.getElementById('latex-equations');
+
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    const scaleFactor = 1.2;
+
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let triangle = {
+      p1: { x: 150, y: 400 },
+      p2: { x: 350, y: 400 },
+      p3: { x: 150, y: 200 },
+      dragging: false,
+      dragPoint: null
+    };
+
+    // متغيرات لسحب العناصر النصية (أطوال الأضلاع)
+    let draggableElements = {
+      sideLabels: [
+        { x: 250, y: 440, text: "", type: "side", side: "b" }, // القاعدة (الضلع الثاني)
+        { x: 100, y: 300, text: "", type: "side", side: "a" },  // الارتفاع (الضلع الأول)
+        { x: 250, y: 300, text: "", type: "side", side: "c" }  // الوتر
+      ],
+      angleLabels: []
+    };
+
+    let triangleDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let triangleStartPos = { p1: {}, p2: {}, p3: {} };
+    let draggingElement = null;
+
+    let currentSides = { a: 0, b: 0, c: 0 };
+
+    helpIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      popupMenu.classList.toggle('show');
+    });
+
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      popupMenu.classList.remove('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!helpIcon.contains(e.target) && !popupMenu.contains(e.target)) {
+        popupMenu.classList.remove('show');
+      }
+    });
+
+    function calculateAndAdjustAngles(p1, p2, p3) {
+      const sideA_px = Math.sqrt(Math.pow(p3.x - p2.x, 2) + Math.pow(p3.y - p2.y, 2));
+      const sideB_px = Math.sqrt(Math.pow(p3.x - p1.x, 2) + Math.pow(p3.y - p1.y, 2));
+      const sideC_px = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+      const angle1 = Math.acos((sideB_px*sideB_px + sideC_px*sideC_px - sideA_px*sideA_px) / (2*sideB_px*sideC_px)) * 180 / Math.PI;
+      const angle2 = Math.acos((sideA_px*sideA_px + sideC_px*sideC_px - sideB_px*sideB_px) / (2*sideA_px*sideC_px)) * 180 / Math.PI;
+      const angle3 = Math.acos((sideA_px*sideA_px + sideB_px*sideB_px - sideC_px*sideC_px) / (2*sideA_px*sideB_px)) * 180 / Math.PI;
+
+      let intAngle1 = Math.round(angle1);
+      let intAngle2 = Math.round(angle2);
+      let intAngle3 = Math.round(angle3);
+
+      const currentSum = intAngle1 + intAngle2 + intAngle3;
+      const diff = 180 - currentSum;
+
+      if (diff !== 0) {
+        const angles = [
+          { value: intAngle1, original: angle1 },
+          { value: intAngle2, original: angle2 },
+          { value: intAngle3, original: angle3 }
+        ];
+        angles.sort((a, b) => Math.abs(b.original - b.value) - Math.abs(a.original - a.value));
+        angles[0].value += diff;
+        intAngle1 = angles[0].value === intAngle1 ? angles[0].value : angles[1].value === intAngle1 ? angles[1].value : angles[2].value;
+        intAngle2 = angles[0].value === intAngle2 ? angles[0].value : angles[1].value === intAngle2 ? angles[1].value : angles[2].value;
+        intAngle3 = angles[0].value === intAngle3 ? angles[0].value : angles[1].value === intAngle3 ? angles[1].value : angles[2].value;
+      }
+      return { angle1: intAngle1, angle2: intAngle2, angle3: intAngle3 };
+    }
+
+    function drawRightAngleSymbol(vertex, side1, side2) {
+      const size = 20 / scale;
+      const vec1 = { x: side1.x - vertex.x, y: side1.y - vertex.y };
+      const vec2 = { x: side2.x - vertex.x, y: side2.y - vertex.y };
+      const len1 = Math.sqrt(vec1.x * vec1.x + vec1.y * vec1.y);
+      const len2 = Math.sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+
+      if (len1 > 0 && len2 > 0) {
+        vec1.x = (vec1.x / len1) * size;
+        vec1.y = (vec1.y / len1) * size;
+        vec2.x = (vec2.x / len2) * size;
+        vec2.y = (vec2.y / len2) * size;
+        ctx.beginPath();
+        ctx.moveTo(vertex.x + vec1.x, vertex.y + vec1.y);
+        ctx.lineTo(vertex.x + vec1.x + vec2.x, vertex.y + vec1.y + vec2.y);
+        ctx.lineTo(vertex.x + vec2.x, vertex.y + vec2.y);
+        ctx.strokeStyle = "#e74c3c";
+        ctx.lineWidth = 3 / scale;
+        ctx.stroke();
+      }
+    }
+
+    function drawTriangle() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(scale, scale);
+
+      const { p1, p2, p3 } = triangle;
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.lineTo(p3.x, p3.y);
+      ctx.closePath();
+      ctx.strokeStyle = "#2c3e50";
+      ctx.lineWidth = 4 / scale;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(52, 152, 219, 0.15)";
+      ctx.fill();
+
+      const angles = calculateAndAdjustAngles(p1, p2, p3);
+      const tolerance = 2;
+      if (Math.abs(angles.angle1 - 90) <= tolerance) {
+        drawRightAngleSymbol(p1, p2, p3);
+      } else if (Math.abs(angles.angle2 - 90) <= tolerance) {
+        drawRightAngleSymbol(p2, p1, p3);
+      } else if (Math.abs(angles.angle3 - 90) <= tolerance) {
+        drawRightAngleSymbol(p3, p1, p2);
+      }
+
+      const sideLengthB = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+      const sideLengthA = Math.sqrt(Math.pow(p3.x - p1.x, 2) + Math.pow(p3.y - p1.y, 2));
+      const sideLengthC = Math.sqrt(Math.pow(p3.x - p2.x, 2) + Math.pow(p3.y - p2.y, 2));
+
+      currentSides.a = Math.round(sideLengthA / 10);
+      currentSides.b = Math.round(sideLengthB / 10);
+      currentSides.c = Math.round(sideLengthC / 10);
+
+      // تحديث ورسم أطوال الأضلاع على الـ canvas
+      ctx.font = `bold ${16 / scale}px Tajawal`; /* تطبيق خط Tajawal وحجمه */
+      ctx.fillStyle = "#27ae60"; /* اللون الأخضر */
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // تحديث النصوص في draggableElements.sideLabels بناءً على currentSides
+      // الضلع الثاني (currentSides.b) - القاعدة
+      draggableElements.sideLabels[0].text = currentSides.b.toString();
+      ctx.fillText(draggableElements.sideLabels[0].text, draggableElements.sideLabels[0].x, draggableElements.sideLabels[0].y);
+
+      // الضلع الأول (currentSides.a) - الارتفاع
+      draggableElements.sideLabels[1].text = currentSides.a.toString();
+      ctx.fillText(draggableElements.sideLabels[1].text, draggableElements.sideLabels[1].x, draggableElements.sideLabels[1].y);
+
+      // الوتر (currentSides.c)
+      draggableElements.sideLabels[2].text = currentSides.c.toString();
+      ctx.fillText(draggableElements.sideLabels[2].text, draggableElements.sideLabels[2].x, draggableElements.sideLabels[2].y);
+
+      ctx.restore();
+    }
+
+    function generateTriangleSides() {
+      let m, n;
+      do {
+        m = Math.floor(Math.random() * 10) + 1;
+        n = Math.floor(Math.random() * 10) + 1;
+      } while (m === n || m >= 11 || n >= 11);
+
+      const hypotenuse = m * m + n * n;
+      const leg1 = Math.abs(m * m - n * n);
+      const leg2 = 2 * m * n;
+
+      if (leg1 === 0 || leg2 === 0) {
+        return generateTriangleSides();
+      }
+      return { a: leg1, b: leg2, c: hypotenuse };
+    }
+
+    function generateNewTriangle() {
+      const sides = generateTriangleSides();
+      const sideB_px = sides.b * 10;
+      const sideA_px = sides.a * 10;
+
+      triangle.p1 = { x: 150, y: 400 };
+      triangle.p2 = { x: 150 + sideB_px, y: 400 };
+      triangle.p3 = { x: 150, y: 400 - sideA_px };
+
+      currentSides.a = sides.a;
+      currentSides.b = sides.b;
+      currentSides.c = sides.c;
+
+      scale = 1;
+      offsetX = 0;
+      offsetY = 0;
+
+      updateElementPositions(); // تحديث مواقع العناصر النصية الأولية
+      drawTriangle();
+      updateLatexEquations();
+    }
+
+    function updateElementPositions() {
+      const { p1, p2, p3 } = triangle;
+
+      // تحديث مواقع أطوال الأضلاع (لتبقى قريبة من الأضلاع التي تمثلها)
+      // الضلع الثاني (currentSides.b) - القاعدة
+      draggableElements.sideLabels[0].x = (p1.x + p2.x) / 2;
+      draggableElements.sideLabels[0].y = (p1.y + p2.y) / 2 + 35;
+
+      // الضلع الأول (currentSides.a) - الارتفاع
+      draggableElements.sideLabels[1].x = (p1.x + p3.x) / 2 - 45;
+      draggableElements.sideLabels[1].y = (p1.y + p3.y) / 2;
+
+      // الوتر (currentSides.c)
+      draggableElements.sideLabels[2].x = (p2.x + p3.x) / 2;
+      draggableElements.sideLabels[2].y = (p2.y + p3.y) / 2 - 35;
+    }
+
+    function getDistance(point1, point2) {
+      return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+    }
+
+    function getMousePos(canvas, evt) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (evt.clientX - rect.left - offsetX) / scale;
+      const y = (evt.clientY - rect.top - offsetY) / scale;
+      return { x, y };
+    }
+
+    // التحقق من النقر على عناصر قابلة للسحب
+    function checkDraggableElements(mousePos) {
+      for (let i = 0; i < draggableElements.sideLabels.length; i++) {
+        const label = draggableElements.sideLabels[i];
+        // استخدام أبعاد تقريبية لتحديد منطقة النقر حول النص
+        const textWidth = ctx.measureText(label.text).width;
+        const textHeight = parseInt(ctx.font.match(/\d+/)[0]); // الحصول على حجم الخط
+
+        const paddedWidth = textWidth + 20; // إضافة هامش
+        const paddedHeight = textHeight + 10; // إضافة هامش
+
+        if (mousePos.x > label.x - paddedWidth / 2 &&
+            mousePos.x < label.x + paddedWidth / 2 &&
+            mousePos.y > label.y - paddedHeight / 2 &&
+            mousePos.y < label.y + paddedHeight / 2) {
+          return label;
+        }
+      }
+      return null;
+    }
+
+    function checkTriangleVertices(mousePos) {
+      const points = [triangle.p1, triangle.p2, triangle.p3];
+      for (let i = 0; i < points.length; i++) {
+        if (getDistance(mousePos, points[i]) * scale < 15) {
+          return points[i];
+        }
+      }
+      return null;
+    }
+
+    function isPointInTriangle(point, p1, p2, p3) {
+      const areaOrig = Math.abs((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y));
+      const area1 = Math.abs((p1.x - point.x) * (p2.y - point.y) - (p2.x - point.x) * (p1.y - point.y));
+      const area2 = Math.abs((p2.x - point.x) * (p3.y - point.y) - (p3.x - point.x) * (p2.y - point.y));
+      const area3 = Math.abs((p3.x - point.x) * (p1.y - point.y) - (p1.x - point.x) * (p3.y - point.y));
+      return Math.abs(areaOrig - (area1 + area2 + area3)) < 0.1;
+    }
+
+    canvas.addEventListener('mousedown', function(e) {
+      const mousePos = getMousePos(canvas, e);
+
+      const clickedVertex = checkTriangleVertices(mousePos);
+      if (clickedVertex) {
+        triangle.dragging = true;
+        triangle.dragPoint = clickedVertex;
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+
+      // التحقق من النقر على أطوال الأضلاع (العناصر النصية)
+      const clickedElement = checkDraggableElements(mousePos);
+      if (clickedElement) {
+        draggingElement = clickedElement;
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+
+      const { p1, p2, p3 } = triangle;
+      if (isPointInTriangle(mousePos, p1, p2, p3)) {
+        triangleDragging = true;
+        dragStartX = mousePos.x;
+        dragStartY = mousePos.y;
+        triangleStartPos.p1 = { x: p1.x, y: p1.y };
+        triangleStartPos.p2 = { x: p2.x, y: p2.y };
+        triangleStartPos.p3 = { x: p3.x, y: p3.y };
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.style.cursor = 'move';
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      const mousePos = getMousePos(canvas, e);
+
+      if (isDragging) {
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        offsetX += dx;
+        offsetY += dy;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        drawTriangle();
+        return;
+      }
+
+      if (draggingElement) {
+        draggingElement.x = mousePos.x;
+        draggingElement.y = mousePos.y;
+        drawTriangle();
+        updateLatexEquations();
+        return;
+      }
+
+      if (triangle.dragging) {
+        triangle.dragPoint.x = mousePos.x;
+        triangle.dragPoint.y = mousePos.y;
+        updateElementPositions();
+        drawTriangle();
+        updateLatexEquations();
+        return;
+      }
+
+      if (triangleDragging) {
+        const dx = mousePos.x - dragStartX;
+        const dy = mousePos.y - dragStartY;
+
+        triangle.p1.x = triangleStartPos.p1.x + dx;
+        triangle.p1.y = triangleStartPos.p1.y + dy;
+        triangle.p2.x = triangleStartPos.p2.x + dx;
+        triangle.p2.y = triangleStartPos.p2.y + dy;
+        triangle.p3.x = triangleStartPos.p3.x + dx;
+        triangle.p3.y = triangleStartPos.p3.y + dy;
+
+        updateElementPositions(); // تحديث مواقع الأرقام عند سحب المثلث
+        drawTriangle();
+        updateLatexEquations();
+        return;
+      }
+
+      const hoverVertex = checkTriangleVertices(mousePos);
+      const hoverElement = checkDraggableElements(mousePos); // التحقق من النص القابل للسحب
+      const hoverTriangle = isPointInTriangle(mousePos, triangle.p1, triangle.p2, triangle.p3);
+      canvas.style.cursor = hoverVertex ? 'grab' :
+                             (hoverElement ? 'grab' :
+                             (hoverTriangle ? 'grab' :
+                             (isDragging ? 'move' : 'default')));
+    });
+
+    canvas.addEventListener('mouseup', function(e) {
+      isDragging = false;
+      draggingElement = null; // إنهاء سحب العنصر النصي
+      triangleDragging = false;
+      triangle.dragging = false;
+      triangle.dragPoint = null;
+      canvas.style.cursor = 'default';
+      updateLatexEquations();
+    });
+
+    canvas.addEventListener('mouseleave', function() {
+      isDragging = false;
+      draggingElement = null;
+      triangleDragging = false;
+      triangle.dragging = false;
+      triangle.dragPoint = null;
+      canvas.style.cursor = 'default';
+      updateLatexEquations();
+    });
+
+    canvas.addEventListener('wheel', function(e) {
+      e.preventDefault();
+
+      const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+      const mouseY = e.clientY - canvas.getBoundingClientRect().top;
+
+      const worldX = (mouseX - offsetX) / scale;
+      const worldY = (mouseY - offsetY) / scale;
+
+      let newScale = scale;
+      if (e.deltaY < 0) {
+        newScale *= scaleFactor;
+      } else {
+        newScale /= scaleFactor;
+      }
+
+      newScale = Math.max(0.2, Math.min(3, newScale));
+
+      offsetX = mouseX - worldX * newScale;
+      offsetY = mouseY - worldY * newScale;
+
+      scale = newScale;
+      drawTriangle();
+    });
+
+    function updateLatexEquations() {
+        const { a, b, c } = currentSides;
+
+        if (a === 0 || b === 0 || c === 0) {
+            latexEquationsDiv.innerHTML = `
+                <p>قم بإنشاء مثلث جديد لرؤية معادلات فيتاغورس!</p>
+            `;
+        } else {
+            latexEquationsDiv.innerHTML = `
+                <div class="rtl-center-text" style="color: #28a745;">
+                    الضلع الأول = \\(${a}\\)، الضلع الثاني = \\(${b}\\)، الوتر = \\(${c}\\)
+                </div>
+                <div class="divider"></div>
+                <div class="ltr-text">
+                    \\( ${a}^2 + ${b}^2 = ${a*a} + ${b*b} = ${a*a + b*b} \\)
+                    <br>
+                    \\( ${c}^2 = ${c*c} \\)
+                </div>
+            `;
+        }
+        if (window.MathJax) {
+            MathJax.typesetPromise([latexEquationsDiv]).then(() => {
+            }).catch((err) => {
+                console.error("MathJax typesetting failed:", err);
+            });
+        }
+    }
+
+    window.onload = function() {
+      generateNewTriangle();
+    };
+  </script>
+</body>
+</html>
